@@ -72,6 +72,7 @@ app.get('*', (req, res) => {
   <style>
     body {font-family: Arial; max-width: 700px; margin: 40px auto; padding: 20px; background: #121212; color: #e0e0e0;}
     h1 {text-align:center; color:#90caf9;}
+    h2 {text-align:center;}
     input, button {padding:10px; font-size:16px; border-radius:5px;}
     input {width:65%; border:1px solid #555; background:#1e1e1e; color:#fff;}
     .add-btn {background:#66bb6a; color:white; border:none;}
