@@ -60,7 +60,7 @@ app.delete('/api/todos/:id', async (req, res) => {
   res.status(204).send();
 });
 
-// === Frontend con modal FUNCIONANDO ===
+// === Frontend Dark Mode ===
 app.get('*', (req, res) => {
   res.send(`
 <!DOCTYPE html>
@@ -70,30 +70,32 @@ app.get('*', (req, res) => {
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Todo List - Actividad 3.3</title>
   <style>
-    body {font-family: Arial; max-width: 700px; margin: 40px auto; padding: 20px; background: #f5f5f5;}
-    h1 {text-align:center; color:#2c3e50;}
+    body {font-family: Arial; max-width: 700px; margin: 40px auto; padding: 20px; background: #121212; color: #e0e0e0;}
+    h1 {text-align:center; color:#90caf9;}
     input, button {padding:10px; font-size:16px; border-radius:5px;}
-    input {width:65%; border:1px solid #ddd;}
-    .add-btn {background:#27ae60; color:white; border:none;}
+    input {width:65%; border:1px solid #555; background:#1e1e1e; color:#fff;}
+    .add-btn {background:#66bb6a; color:white; border:none;}
     ul {list-style:none; padding:0;}
-    li {background:white; padding:15px; margin:10px 0; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.1); display:flex; justify-content:space-between; align-items:center;}
+    li {background:#1e1e1e; padding:15px; margin:10px 0; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.5); display:flex; justify-content:space-between; align-items:center;}
     .actions button {padding:8px 12px; margin-left:5px; border:none; border-radius:4px; color:white; cursor:pointer;}
-    .view {background:#3498db;}
-    .edit {background:#f39c12;}
-    .delete {background:#e74c3c;}
+    .view {background:#42a5f5;}
+    .edit {background:#ffb74d;}
+    .delete {background:#ef5350;}
     .edit-input {display:flex; width:100%;}
-    .edit-input input {flex:1; margin-right:10px;}
-    .edit-input button:first-child {background:#27ae60;}
-    .edit-input button:last-child {background:#95a5a6;}
-    small {color:#7f8c8d; font-size:0.9em;}
-    #detailModal {display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); justify-content:center; align-items:center; z-index:999;}
-    .modal-content {background:white; padding:30px; border-radius:12px; width:90%; max-width:500px; position:relative;}
+    .edit-input input {flex:1; margin-right:10px; background:#1e1e1e; color:#fff; border:1px solid #555;}
+    .edit-input button:first-child {background:#66bb6a;}
+    .edit-input button:last-child {background:#757575;}
+    small {color:#aaa; font-size:0.9em;}
+    #detailModal {display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); justify-content:center; align-items:center; z-index:999;}
+    .modal-content {background:#1e1e1e; color:#e0e0e0; padding:30px; border-radius:12px; width:90%; max-width:500px; position:relative;}
     .close {position:absolute; top:10px; right:15px; font-size:28px; cursor:pointer; color:#aaa;}
-    .close:hover {color:#000;}
+    .close:hover {color:#fff;}
+    .modal-content button {background:#42a5f5; color:white; border:none; border-radius:5px; padding:10px 20px; cursor:pointer;}
   </style>
 </head>
 <body>
   <h1>Todo List - Actividad 3.3</h1>
+  <h2>Jonathan Jovany Ramirez</h2>
   <div style="text-align:center; margin:20px 0;">
     <input type="text" id="todoInput" placeholder="Nueva tarea..." />
     <button class="add-btn" onclick="addTodo()">Agregar</button>
@@ -106,7 +108,7 @@ app.get('*', (req, res) => {
       <span class="close" onclick="closeModal()">&times;</span>
       <h3>Detalle completo</h3>
       <div id="detailContent"></div>
-      <button onclick="closeModal()" style="margin-top:20px; padding:10px 20px; background:#3498db; color:white; border:none; border-radius:5px;">Cerrar</button>
+      <button onclick="closeModal()">Cerrar</button>
     </div>
   </div>
 
@@ -123,7 +125,6 @@ app.get('*', (req, res) => {
         const date = new Date(todo.created_at).toLocaleString('es-MX');
         const li = document.createElement('li');
         
-        // Usamos data attributes en lugar de JSON.stringify
         li.innerHTML = editingId === todo.id ? 
           \`<div class="edit-input">
             <input type="text" id="editInput" value="\${todo.text}" />
@@ -131,19 +132,18 @@ app.get('*', (req, res) => {
             <button onclick="cancelEdit()">✖</button>
           </div>\` :
           \`<div>
-            <strong ondblclick="startEdit(\${todo.id}, this)">\${todo.text}</strong>
+            <strong ondblclick="startEdit(\${todo.id})">\${todo.text}</strong>
             <br><small>ID: \${todo.id} | \${date}</small>
           </div>
           <div class="actions">
             <button class="view" onclick="showDetail(\${todo.id})">👁️</button>
-            <button class="edit" onclick="startEdit(\${todo.id}, this.parentNode.previousElementSibling.querySelector('strong'))">✎</button>
+            <button class="edit" onclick="startEdit(\${todo.id})">✎</button>
             <button class="delete" onclick="deleteTodo(\${todo.id})">×</button>
           </div>\`;
         list.appendChild(li);
       });
     }
 
-    // Ahora showDetail usa la API en lugar de pasar todo el objeto
     async function showDetail(id) {
       const res = await fetch(\`\${api}/\${id}\`);
       const todo = await res.json();
@@ -196,12 +196,10 @@ app.get('*', (req, res) => {
 
     loadTodos();
 
-    // Enter para agregar
     document.getElementById('todoInput').addEventListener('keypress', e => {
       if (e.key === 'Enter') addTodo();
     });
 
-    // Cerrar con ESC o clic fuera
     window.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
     window.addEventListener('click', e => {
       if (e.target === document.getElementById('detailModal')) closeModal();
